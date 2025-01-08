@@ -9,7 +9,7 @@ const Effects = {
   HEAT: 'heat'
 };
 
-const effectToFilter = {
+const EffectToFilter = {
   [Effects.CHROME]: {
     filter: 'grayscale',
     units: '',
@@ -70,18 +70,17 @@ const effectsList = document.querySelector('.effects__list');
 
 let currentEffect = Effects.NONE;
 
-// Скрываем слайдер изначально
 effectLevel.classList.add('hidden');
 
-const isDefault = () => currentEffect === Effects.NONE;
+const checkDefaultEffect = () => currentEffect === Effects.NONE;
 
 const setImageStyle = (value) => {
-  if (isDefault()) {
+  if (checkDefaultEffect()) {
     imagePreview.style.filter = '';
     return;
   }
 
-  const effect = effectToFilter[currentEffect];
+  const effect = EffectToFilter[currentEffect];
   imagePreview.style.filter = `${effect.filter}(${value}${effect.units})`;
 };
 
@@ -102,7 +101,7 @@ const initSlider = () => {
 };
 
 const updateSlider = () => {
-  if (isDefault()) {
+  if (checkDefaultEffect()) {
     effectLevel.classList.add('hidden');
     imagePreview.style.filter = '';
     effectLevelValue.value = '';
@@ -111,31 +110,26 @@ const updateSlider = () => {
 
   effectLevel.classList.remove('hidden');
 
-  const effect = effectToFilter[currentEffect];
-  // Устанавливаем настройки слайдера согласно текущему эффекту
+  const effect = EffectToFilter[currentEffect];
   effectLevelSlider.noUiSlider.updateOptions({
     range: effect.range,
     step: effect.step,
     start: effect.start
   });
 
-  // Устанавливаем начальное значение в поле
   effectLevelValue.value = effect.start;
-  // Применяем начальный эффект
   setImageStyle(effect.start);
 };
 
-const onEffectChange = (evt) => {
+const effectChangeHandler = (evt) => {
   if (!evt.target.classList.contains('effects__radio')) {
     return;
   }
 
   currentEffect = evt.target.value;
 
-  // Если слайдер еще не создан - создаем
   if (!effectLevelSlider.noUiSlider) {
     initSlider();
-    // Добавляем обработчик изменения значения слайдера
     effectLevelSlider.noUiSlider.on('update', () => {
       const sliderValue = effectLevelSlider.noUiSlider.get();
       effectLevelValue.value = sliderValue;
@@ -156,6 +150,6 @@ const reset = () => {
   effectLevelValue.value = '';
 };
 
-effectsList.addEventListener('change', onEffectChange);
+effectsList.addEventListener('change', effectChangeHandler);
 
 export { reset };
